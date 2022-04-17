@@ -103,18 +103,19 @@ class Teeko {
                 } 
             }
             
-            std::cout << " " << horizontalSeperator << std::endl;
-            std::cout << "   " << "\u001b[34m4\u001b[0m" << "  " << verticalSeperator << "  " << arrayboard[20] << "  " << verticalSeperator << "  " << arrayboard[21] << "  " << verticalSeperator << "  " << arrayboard[22] << "  " << verticalSeperator << "  " << arrayboard[23] << "  " << verticalSeperator << "  " << arrayboard[24] << "  \u001b[36m|\u001b[0m" << std::endl;
-            std::cout << " " << horizontalSeperator << std::endl;
-            std::cout << "   " << "\u001b[34m3\u001b[0m" << "  " << verticalSeperator << "  " << arrayboard[15] << "  " << verticalSeperator << "  " << arrayboard[16] << "  " << verticalSeperator << "  " << arrayboard[17] << "  " << verticalSeperator << "  " << arrayboard[18] << "  " << verticalSeperator << "  " << arrayboard[19] << "  \u001b[36m|\u001b[0m" << std::endl;
-            std::cout << " " << horizontalSeperator << std::endl;
-            std::cout << "   " << "\u001b[34m2\u001b[0m" << "  " << verticalSeperator << "  " << arrayboard[10] << "  " << verticalSeperator << "  " << arrayboard[11] << "  " << verticalSeperator << "  " << arrayboard[12] << "  " << verticalSeperator << "  " << arrayboard[13] << "  " << verticalSeperator << "  " << arrayboard[14] << "  \u001b[36m|\u001b[0m" << std::endl;
-            std::cout << " " << horizontalSeperator << std::endl;
-            std::cout << "   " << "\u001b[34m1\u001b[0m" << "  " << verticalSeperator << "  " << arrayboard[5] << "  " << verticalSeperator << "  " << arrayboard[6] << "  " << verticalSeperator << "  " << arrayboard[7] << "  " << verticalSeperator << "  " << arrayboard[8] << "  " << verticalSeperator << "  " << arrayboard[9] << "  \u001b[36m|\u001b[0m" << std::endl;
-            std::cout << " " << horizontalSeperator << std::endl;
-            std::cout << "   " << "\u001b[34m0\u001b[0m" << "  " << verticalSeperator << "  " << arrayboard[0] << "  " << verticalSeperator << "  " << arrayboard[1] << "  " << verticalSeperator << "  " << arrayboard[2] << "  " << verticalSeperator << "  " << arrayboard[3] << "  " << verticalSeperator << "  " << arrayboard[4] << "  \u001b[36m|\u001b[0m" << std::endl;
-            std::cout << " " << horizontalSeperator << std::endl;
-            std::cout << "      " << verticalSeperator << "  " << "\u001b[34m0\u001b[0m" << "  " << verticalSeperator << "  " << "\u001b[34m1\u001b[0m" << "  " << verticalSeperator << "  " << "\u001b[34m2\u001b[0m" << "  " << verticalSeperator << "  " << "\u001b[34m3\u001b[0m" << "  " << verticalSeperator << "  " << "\u001b[34m4\u001b[0m" << "  \u001b[36m|\u001b[0m" << std::endl;
+            std::cout << horizontalSeperator << std::endl;
+            std::cout << verticalSeperator << "  " << "\u001b[34m4\u001b[0m" << "  " << verticalSeperator << "  " << arrayboard[20] << "  " << verticalSeperator << "  " << arrayboard[21] << "  " << verticalSeperator << "  " << arrayboard[22] << "  " << verticalSeperator << "  " << arrayboard[23] << "  " << verticalSeperator << "  " << arrayboard[24] << "  \u001b[36m|\u001b[0m" << std::endl;
+            std::cout << horizontalSeperator << std::endl;
+            std::cout << verticalSeperator << "  " << "\u001b[34m3\u001b[0m" << "  " << verticalSeperator << "  " << arrayboard[15] << "  " << verticalSeperator << "  " << arrayboard[16] << "  " << verticalSeperator << "  " << arrayboard[17] << "  " << verticalSeperator << "  " << arrayboard[18] << "  " << verticalSeperator << "  " << arrayboard[19] << "  \u001b[36m|\u001b[0m" << std::endl;
+            std::cout << horizontalSeperator << std::endl;
+            std::cout << verticalSeperator << "  " << "\u001b[34m2\u001b[0m" << "  " << verticalSeperator << "  " << arrayboard[10] << "  " << verticalSeperator << "  " << arrayboard[11] << "  " << verticalSeperator << "  " << arrayboard[12] << "  " << verticalSeperator << "  " << arrayboard[13] << "  " << verticalSeperator << "  " << arrayboard[14] << "  \u001b[36m|\u001b[0m" << std::endl;
+            std::cout << horizontalSeperator << std::endl;
+            std::cout << verticalSeperator << "  " << "\u001b[34m1\u001b[0m" << "  " << verticalSeperator << "  " << arrayboard[5] << "  " << verticalSeperator << "  " << arrayboard[6] << "  " << verticalSeperator << "  " << arrayboard[7] << "  " << verticalSeperator << "  " << arrayboard[8] << "  " << verticalSeperator << "  " << arrayboard[9] << "  \u001b[36m|\u001b[0m" << std::endl;
+            std::cout << horizontalSeperator << std::endl;
+            std::cout << verticalSeperator << "  " << "\u001b[34m0\u001b[0m" << "  " << verticalSeperator << "  " << arrayboard[0] << "  " << verticalSeperator << "  " << arrayboard[1] << "  " << verticalSeperator << "  " << arrayboard[2] << "  " << verticalSeperator << "  " << arrayboard[3] << "  " << verticalSeperator << "  " << arrayboard[4] << "  \u001b[36m|\u001b[0m" << std::endl;
+            std::cout << horizontalSeperator << std::endl;
+            std::cout << verticalSeperator << "  " << "-" << "  " << verticalSeperator << "  " << "\u001b[34m0\u001b[0m" << "  " << verticalSeperator << "  " << "\u001b[34m1\u001b[0m" << "  " << verticalSeperator << "  " << "\u001b[34m2\u001b[0m" << "  " << verticalSeperator << "  " << "\u001b[34m3\u001b[0m" << "  " << verticalSeperator << "  " << "\u001b[34m4\u001b[0m" << "  \u001b[36m|\u001b[0m" << std::endl;
+            std::cout << horizontalSeperator << std::endl;
         };
 
         static constexpr bitboard indexMask(unsigned int index) {
