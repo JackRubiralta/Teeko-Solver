@@ -1,7 +1,8 @@
 #include <bitset>
 #include <iostream>
 #include <string>
-
+#include <vector>
+// MAX MOVES = 100
 /*
 Board Position
     20 21 22 23 24
@@ -11,12 +12,12 @@ Board Position
     00 01 02 03 04
 */
 
+using bitboard = uint32_t; 
 
 
 class Teeko {
     public:
         // the size of the board is 5 * 5 = 25 tiles
-        using bitboard = uint32_t; 
         static constexpr unsigned int LENGTH = 5;
 
         bitboard red = 0b1100000000000000011000;
@@ -33,7 +34,6 @@ class Teeko {
 
         // the move consist of a 2 bits one of the piece to be moved and the other of the destination
         void makeMove(bitboard move) {
-            std::cout << "move: " << std::bitset<25>(move) << std::endl;
             // black is the player who plays first
             if (currentPlayer() == 0) {
                 black ^= move;
@@ -85,14 +85,49 @@ class Teeko {
 
             return false;
         };
-      
+
+        std::vector<bitboard> possibleMoves() const {
+            std::vector<bitboard> moves = std::vector<bitboard>();
+
+            bitboard markers = currentPlayer() == 0 ? black : red; 
+            const bitboard unoccupied = ~mask();
+
+            while (markers != 0) {
+                bitboard marker = (markers & -markers);
+                markers ^= marker;
+
+                bitboard move;    
+                move = ((marker << 1) & 0b1111011110111101111011110) & unoccupied;
+                if (move != 0) { moves.push_back(move | marker); };
+                move = ((marker << 6) & 0b1111011110111101111011110) & unoccupied;
+                if (move != 0) { moves.push_back(move | marker); };
+                move = ((marker >> 4) & 0b1111011110111101111011110) & unoccupied;
+                if (move != 0) { moves.push_back(move | marker); };
+                move = ((marker >> 1) & 0b0111101111011110111101111) & unoccupied;
+                if (move != 0) { moves.push_back(move | marker); };
+                move = ((marker >> 6) & 0b0111101111011110111101111) & unoccupied;
+                if (move != 0) { moves.push_back(move | marker); };
+                move = ((marker << 4) & 0b0111101111011110111101111) & unoccupied;
+                if (move != 0) { moves.push_back(move | marker); };
+                move = (marker >> 5) & unoccupied; // south
+                if (move != 0) { moves.push_back(move | marker); };
+                move = (marker << 5) & unoccupied; // north 
+                if (move != 0) { moves.push_back(move | marker); };
+            }      
+            return moves;      
+        }
+
+        uint64_t key() const {
+            return (uint64_t)red | ((uint64_t)black << 32);
+        }
+
         void print() const {
             const std::string verticalSeperator = "\u001b[36m|\u001b[0m";
             const std::string horizontalSeperator = "\u001b[36m-------------------------------------\u001b[0m";
-            const std::string redMarker = "\u001b[31;1mR\u001b[0m";
-            const std::string blackMarker = "\u001b[30;1mB\u001b[0m";
-
-            std::string arrayboard[25] = {"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-"};
+            const std::string redMarker = "\u001b[31;1m R \u001b[0m";
+            const std::string blackMarker = "\u001b[30;1m B \u001b[0m";
+            std::string arrayboard[25] = {" - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - ", " - "};
+            
 
             for (int i = 0; i < 25; i++) {
                 if ((((bitboard)1 << i) & black) != 0) {
@@ -100,21 +135,26 @@ class Teeko {
                 }
                 if ((((bitboard)1 << i) & red) != 0) {
                     arrayboard[i] = redMarker;
+                }
+                for (const bitboard move : possibleMoves()) {
+                    if ((((bitboard)1 << i) & (move & ~mask())) != 0) {
+                        arrayboard[i] = "\u001b[35;1m + \u001b[0m";
+                    }
                 } 
             }
             
             std::cout << horizontalSeperator << std::endl;
-            std::cout << verticalSeperator << "  " << "\u001b[34m4\u001b[0m" << "  " << verticalSeperator << "  " << arrayboard[20] << "  " << verticalSeperator << "  " << arrayboard[21] << "  " << verticalSeperator << "  " << arrayboard[22] << "  " << verticalSeperator << "  " << arrayboard[23] << "  " << verticalSeperator << "  " << arrayboard[24] << "  \u001b[36m|\u001b[0m" << std::endl;
+            std::cout << verticalSeperator << " " << "\u001b[34m 4 \u001b[0m" << " " << verticalSeperator << " " << arrayboard[20] << " " << verticalSeperator << " " << arrayboard[21] << " " << verticalSeperator << " " << arrayboard[22] << " " << verticalSeperator << " " << arrayboard[23] << " " << verticalSeperator << " " << arrayboard[24] << " " << verticalSeperator << std::endl;
             std::cout << horizontalSeperator << std::endl;
-            std::cout << verticalSeperator << "  " << "\u001b[34m3\u001b[0m" << "  " << verticalSeperator << "  " << arrayboard[15] << "  " << verticalSeperator << "  " << arrayboard[16] << "  " << verticalSeperator << "  " << arrayboard[17] << "  " << verticalSeperator << "  " << arrayboard[18] << "  " << verticalSeperator << "  " << arrayboard[19] << "  \u001b[36m|\u001b[0m" << std::endl;
+            std::cout << verticalSeperator << " " << "\u001b[34m 3 \u001b[0m" << " " << verticalSeperator << " " << arrayboard[15] << " " << verticalSeperator << " " << arrayboard[16] << " " << verticalSeperator << " " << arrayboard[17] << " " << verticalSeperator << " " << arrayboard[18] << " " << verticalSeperator << " " << arrayboard[19] << " " << verticalSeperator << std::endl;
             std::cout << horizontalSeperator << std::endl;
-            std::cout << verticalSeperator << "  " << "\u001b[34m2\u001b[0m" << "  " << verticalSeperator << "  " << arrayboard[10] << "  " << verticalSeperator << "  " << arrayboard[11] << "  " << verticalSeperator << "  " << arrayboard[12] << "  " << verticalSeperator << "  " << arrayboard[13] << "  " << verticalSeperator << "  " << arrayboard[14] << "  \u001b[36m|\u001b[0m" << std::endl;
+            std::cout << verticalSeperator << " " << "\u001b[34m 2 \u001b[0m" << " " << verticalSeperator << " " << arrayboard[10] << " " << verticalSeperator << " " << arrayboard[11] << " " << verticalSeperator << " " << arrayboard[12] << " " << verticalSeperator << " " << arrayboard[13] << " " << verticalSeperator << " " << arrayboard[14] << " " << verticalSeperator << std::endl;
             std::cout << horizontalSeperator << std::endl;
-            std::cout << verticalSeperator << "  " << "\u001b[34m1\u001b[0m" << "  " << verticalSeperator << "  " << arrayboard[5] << "  " << verticalSeperator << "  " << arrayboard[6] << "  " << verticalSeperator << "  " << arrayboard[7] << "  " << verticalSeperator << "  " << arrayboard[8] << "  " << verticalSeperator << "  " << arrayboard[9] << "  \u001b[36m|\u001b[0m" << std::endl;
+            std::cout << verticalSeperator << " " << "\u001b[34m 1 \u001b[0m" << " " << verticalSeperator << " " << arrayboard[5] << " " << verticalSeperator << " " << arrayboard[6] << " " << verticalSeperator << " " << arrayboard[7] << " " << verticalSeperator << " " << arrayboard[8] << " " << verticalSeperator << " " << arrayboard[9] << " " << verticalSeperator << std::endl;
             std::cout << horizontalSeperator << std::endl;
-            std::cout << verticalSeperator << "  " << "\u001b[34m0\u001b[0m" << "  " << verticalSeperator << "  " << arrayboard[0] << "  " << verticalSeperator << "  " << arrayboard[1] << "  " << verticalSeperator << "  " << arrayboard[2] << "  " << verticalSeperator << "  " << arrayboard[3] << "  " << verticalSeperator << "  " << arrayboard[4] << "  \u001b[36m|\u001b[0m" << std::endl;
+            std::cout << verticalSeperator << " " << "\u001b[34m 0 \u001b[0m" << " " << verticalSeperator << " " << arrayboard[0] << " " << verticalSeperator << " " << arrayboard[1] << " " << verticalSeperator << " " << arrayboard[2] << " " << verticalSeperator << " " << arrayboard[3] << " " << verticalSeperator << " " << arrayboard[4] << " " << verticalSeperator << std::endl;
             std::cout << horizontalSeperator << std::endl;
-            std::cout << verticalSeperator << "  " << "-" << "  " << verticalSeperator << "  " << "\u001b[34m0\u001b[0m" << "  " << verticalSeperator << "  " << "\u001b[34m1\u001b[0m" << "  " << verticalSeperator << "  " << "\u001b[34m2\u001b[0m" << "  " << verticalSeperator << "  " << "\u001b[34m3\u001b[0m" << "  " << verticalSeperator << "  " << "\u001b[34m4\u001b[0m" << "  \u001b[36m|\u001b[0m" << std::endl;
+            std::cout << verticalSeperator << " " << " - " << " " << verticalSeperator << " " << "\u001b[34m 0 \u001b[0m" << " " << verticalSeperator << " " << "\u001b[34m 1 \u001b[0m" << " " << verticalSeperator << " " << "\u001b[34m 2 \u001b[0m" << " " << verticalSeperator << " " << "\u001b[34m 3 \u001b[0m" << " " << verticalSeperator << " " << "\u001b[34m 4 \u001b[0m" << " " << verticalSeperator << std::endl;
             std::cout << horizontalSeperator << std::endl;
         };
 
