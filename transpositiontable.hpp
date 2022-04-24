@@ -3,7 +3,7 @@
 
 
 
-enum Flag : uint8_t { INVALID, EXACT, LOWERBOUND, UPPERBOUND, C };
+enum Flag : uint8_t { INVALID, EXACT, LOWERBOUND, UPPERBOUND };
 
 struct Entry {
     int8_t value;

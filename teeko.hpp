@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <array> 
+
 // MAX MOVES = 100
 /*
 Board Position
@@ -19,7 +21,9 @@ class Teeko {
     public:
         // the size of the board is 5 * 5 = 25 tiles
         static constexpr unsigned int LENGTH = 5;
-
+        static constexpr unsigned int MAX_MOVES = 100;
+        
+        uint64_t previousKeys[MAX_MOVES];
         bitboard red = 0b1100000000000000011000;
         bitboard black = 0b1100000000000000000000011;
         unsigned int moveCounter = 0;
@@ -30,6 +34,7 @@ class Teeko {
             red = other.red;
             black = other.black;
             moveCounter = other.moveCounter;
+            std::copy(std::begin(other.previousKeys), std::end(other.previousKeys), std::begin(previousKeys ));
         }
 
         // the move consist of a 2 bits one of the piece to be moved and the other of the destination
@@ -40,6 +45,7 @@ class Teeko {
             } else {
                 red ^= move;
             }
+            previousKeys[moveCounter] = key();
             moveCounter++;
         }
 
@@ -89,6 +95,14 @@ class Teeko {
             }
             return false;
         };
+
+        bool isDraw() const {
+            return moveCounter >= MAX_MOVES;
+        }
+
+        bool isGameOver() const {
+            return isWin() || isDraw();
+        }
 
         std::vector<bitboard> possibleMoves() const {
             std::vector<bitboard> moves = std::vector<bitboard>();
