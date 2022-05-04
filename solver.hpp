@@ -42,7 +42,7 @@ int negamax(const Teeko &node) {
     return bestValue;
 };
 
-int solve(const Teeko &root, unsigned int depth) {
+int solve(const Teeko &root) {
     return negamax(root);
 };
 
