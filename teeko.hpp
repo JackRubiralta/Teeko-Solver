@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <array> 
+#include <immintrin.h>
 
 
 // MAX MOVES = 100
@@ -15,8 +16,37 @@ Board Position
     00 01 02 03 04
 */
 
+
+
+
 using bitboard = uint32_t; 
 
+
+bitboard bit_permute_step(bitboard x, bitboard m, bitboard shift) {
+    bitboard t;
+    t = ((x >> shift) ^ x) & m;
+    x = (x ^ t) ^ (t << shift);
+    return x;
+}
+
+
+bitboard transpose(bitboard board) {
+    board = bit_permute_step(board, 0x00006300, 16);
+    board = bit_permute_step(board, 0x020a080a, 4);
+    board = bit_permute_step(board, 0x0063008c, 8);
+    board = bit_permute_step(board, 0x00006310, 16);
+    return board;
+};
+
+bitboard reflect(bitboard board) { 
+    bitboard row0 = board & 0b11111;
+    bitboard row1 = board & 0b1111100000;
+    bitboard row2 = board & 0b111110000000000;
+    bitboard row3 = board & 0b11111000000000000000;
+    bitboard row4 = board & 0b01111100000000000000000000;
+
+    return (row0 << 20) | (row1 << 10) | (row2) | (row3 >> 10) | (row4 >> 20);    
+};
 
 class Teeko {
     public:
@@ -40,6 +70,7 @@ class Teeko {
         Teeko() {
             red = 0b1100000000000000011000;
             black = 0b1100000000000000000000011;
+           
         };
 
         Teeko(const Teeko& other) { 
@@ -146,7 +177,40 @@ class Teeko {
         }
 
         uint64_t key() const {
-            return (uint64_t)red | ((uint64_t)black << 32);
+            bitboard blackPositions[8];
+            blackPositions[0] = black;
+            blackPositions[1] = reflect(black);
+            blackPositions[2] = transpose(black);
+            blackPositions[3] = reflect(transpose(black));
+            blackPositions[4] = transpose(reflect(black));
+            blackPositions[5] = transpose(reflect(transpose(black)));
+            blackPositions[6] = reflect(transpose(reflect(black)));
+            blackPositions[7] = transpose(reflect(transpose(reflect(black))));
+
+            bitboard redPositions[8];
+            redPositions[0] = red;
+            redPositions[1] = reflect(red);
+            redPositions[2] = transpose(red);
+            redPositions[3] = reflect(transpose(red));
+            redPositions[4] = transpose(reflect(red));
+            redPositions[5] = transpose(reflect(transpose(red)));
+            redPositions[6] = reflect(transpose(reflect(red)));
+            redPositions[7] = transpose(reflect(transpose(reflect(red))));
+
+            bitboard smallestRed = redPositions[0];
+            bitboard smallestBlack = blackPositions[0];
+            for (int i = 1; i < 8; i++) {
+                if (redPositions[i] < smallestRed) {
+                    smallestRed = redPositions[i];
+                }
+
+                if (blackPositions[i] < smallestBlack) {
+                    smallestBlack = blackPositions[i];
+                }
+            }
+
+             
+            return (uint64_t) smallestRed | ((uint64_t)smallestBlack << 28);
         }
 
         void print() const {
