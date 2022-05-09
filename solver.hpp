@@ -3,54 +3,64 @@
 #include "teeko.hpp"
 #include <algorithm>
 #include <unordered_set>
-#include <unordered_map>
-#include <ostream>
-std::unordered_map<uint64_t, int> transpositionTable = std::unordered_map<uint64_t, int>();
-std::unordered_set<uint64_t> previousStates = std::unordered_set<uint64_t>();
-unsigned int long long nodesExplored = 0;
+#include <vector>
+class Node {  // changed to class because class is refernce instead of by value
+    public:
+        Teeko game;
+        std::vector<Node> children;
+        Node(const Teeko g) {
+            game = g;
+        }
+};
 
-std::ostream& operator<<(std::ostream& os, const std::unordered_map<uint64_t, int>& table) {
-    for (auto& entry : table) {
-        os << entry.first << ": " << entry.second << std::endl;
+std::unordered_set<uint64_t> previousStates = std::unordered_set<uint64_t>();
+// use unordered_map to store the previous states
+// with the key and then the value is the node as reference
+
+Node gameGraph;
+void generateGameGraph() {
+    Teeko game = Teeko();
+    gameGraph.game = game;
+    for (const Teeko child : game.generateChildren()) {
+        gameGraph.children.push_back(Node(child));
     }
-    return os;
+    iterativeGeneration(gameGraph.children);
 }
 
-int negamax(const Teeko &node) {
-    if (node.isDraw()) { return 0; }
-    if (node.isWin()) { return -(((int)Teeko::MAX_MOVES + (int)1 - (int)node.moveCounter) / (int)2); } 
-    
-    if (previousStates.find(node.key()) != previousStates.end()) { return 0; }
-        
-    if (transpositionTable.find(node.key()) != transpositionTable.end()) { return transpositionTable[node.key()]; }
+unsigned int currentIteration = 0;
+void iterativeGeneration(std::vector<Node> parents) {
+    currentIteration++;
 
-    previousStates.insert(node.key());
+    std::vector<Node> children;
+    for (Node parent : parents) { // dont need to pass by refernce 
+        for (const Teeko childGame : parent.game.generateChildren()) {
+            if (childGame.isWin()) {
+                Node child = Node(childGame);
+                parent.children.push_back(child);
+                continue;
+            }
 
-    int bestValue = -2147483;
-    for (bitboard move : node.possibleMoves()) { 
-        Teeko child = Teeko(node);
-        child.makeMove(move);
-
-        int value = -negamax(child);
-        if (value >= bestValue) {
-            bestValue = value;
+            if (previousStates.find(childGame.key()) == previousStates.end()) {
+                Node child = Node(childGame);
+                
+                parent.children.push_back(child);
+                previousStates.insert(childGame.key());
+                children.push_back(child);
+            } else {
+                // add child as refernce to other node in graph
+                // parent.children.push_back(ref of other node in graph);
+            }
         }
     }
-
-    previousStates.erase(node.key());
-    transpositionTable[node.key()] = bestValue;
-    return bestValue;
-};
-
-int solve(const Teeko &root) {
-    return negamax(root);
-};
-
-
-void reset() {
-    nodesExplored = 0;
-    previousStates.empty();
-    transpositionTable.clear();
+    
+    // clear progress bar
+    std::cout << "\r";
+    // print current iteration
+    std::cout << "Iteration " << currentIteration++ << "; ";
+    std::cout << "Nodes: " << previousStates.size() << "; ";
+    std::cout << "Children: " << children.size() << "; ";
+    std::cout << std::endl;
+    iterativeGeneration(children);
 }
 
 #endif
