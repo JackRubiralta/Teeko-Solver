@@ -76,15 +76,17 @@ int solve2(Teeko node) {
 bitboard bestMove(Teeko node) {
     int bestValue = LOSE;
     bitboard bestMove;
-    int bestTieScore = 0;
     if (node.phase() == MOVE_PHASE) {
         for (bitboard move : node.possibleMoves()) {
             Teeko child = node; 
             child.makeMove(move);  
             int value = -solve(child);
             
-            
-            if (value > bestValue) {
+            if ((bestValue == value)) {
+                if (rand() & 1) {
+                    bestMove = move;
+                }
+            } else if (value > bestValue) {
                 bestValue = value;
                 bestMove = move;
             }
@@ -255,6 +257,6 @@ int main() {
     system("CLS");
     game.print();
     std::cout << "Player " << (game.currentPlayer() ^ 1) << " wins!" << std::endl;
-    
+    while (true) {}
     return 0;
 }
