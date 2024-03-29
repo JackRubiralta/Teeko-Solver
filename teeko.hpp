@@ -2,7 +2,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <immintrin.h>
+#include <climits> // Include this for CHAR_BIT
+#include <cstdint> // Ensure this is included for uint32_t and similar types
+
 
 using bitboard = uint32_t; 
 
