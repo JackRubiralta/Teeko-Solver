@@ -126,7 +126,7 @@ bitboard bestMove(Teeko node) {
 
 
 enum { PLAYER_VS_AI = false, PLAYER_VS_PLAYER = true };
-const bool OPPONENTS = PLAYER_VS_PLAYER;
+const bool OPPONENTS = PLAYER_VS_AI;
 
 
 int main() {
@@ -143,7 +143,7 @@ int main() {
 
 
         //int value = solve(game);
-        if (PLAYER_VS_PLAYER || game.currentPlayer() == 0) { // change false to true to change to player vs player
+        if (OPPONENTS || game.currentPlayer() == 1) { // change false to true to change to player vs player
             bool selecting = true;
 
            
