@@ -2,6 +2,10 @@
 #include <conio.h>//For _getch().
 #include <fstream>
 #include <algorithm>
+#include <random>
+std::random_device rd;  // Obtain a random number from hardware
+std::mt19937 rng(rd()); // Seed the generator
+std::uniform_int_distribution<std::mt19937::result_type> dist(0,1); // Define the range
 
 //https://stackoverflow.com/questions/24708700/c-detect-when-user-presses-arrow-key
 #define KEY_UP 72       //Up arrow character
@@ -107,6 +111,11 @@ bitboard bestMove(Teeko node) {
             if (value > bestValue) {
                 bestValue = value;
                 bestMove = move;
+            } else if (value == bestValue) {
+                // Randomly decide whether to update bestMove or not
+                if (dist(rng) == 1) {
+                    bestMove = move;
+                }
             }
             
         }
@@ -116,10 +125,15 @@ bitboard bestMove(Teeko node) {
 }
 
 
+enum { PLAYER_VS_AI = false, PLAYER_VS_PLAYER = true };
+const bool OPPONENTS = PLAYER_VS_PLAYER;
+
 
 int main() {
     Teeko game = Teeko();
-    load_book();
+    if (!OPPONENTS) {
+        load_book();
+    }
    
     while (!(game.isWin())) {
             
@@ -129,7 +143,7 @@ int main() {
 
 
         //int value = solve(game);
-        if (false || game.currentPlayer() == 0) {
+        if (PLAYER_VS_PLAYER || game.currentPlayer() == 0) { // change false to true to change to player vs player
             bool selecting = true;
 
            
@@ -149,8 +163,8 @@ int main() {
             std::cout << (game.currentPlayer() == 0 ? "\u001b[30;1mBlack\u001b[0m" : "\u001b[31;1mRed\u001b[0m") << " player enter move: " << std::endl;
 
 
-            std::cout << "\x1b[A" << "\x1b[A" << "\x1b[A" << "\x1b[A" << "\x1b[A" << "\x1b[A" << "\x1b[A" << "\x1b[A" << "\x1b[A" << "\x1b[A";
-            std::cout << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C"  << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C";
+            std::cout << "\x1b[A" << "\x1b[A" << "\x1b[A" << "\x1b[A" << "\x1b[A" << "\x1b[A" << "\x1b[A" << "\x1b[A";
+            std::cout << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C"  << "\x1b[C";
             //std::cout << "value: " << value << std::endl;
             bool selectingMarker = true;
             unsigned int x = 2; unsigned int y = 2; 
@@ -208,8 +222,8 @@ int main() {
                                     }
                                     std::cout << (game.currentPlayer() == 0 ? "\u001b[30;1mBlack\u001b[0m" : "\u001b[31;1mRed\u001b[0m") << " player enter move: " << std::endl;
 
-                                    std::cout << "\x1b[A" << "\x1b[A" << "\x1b[A" << "\x1b[A" << "\x1b[A" << "\x1b[A";
-                                    std::cout << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C";
+                                    std::cout << "\x1b[A" << "\x1b[A" << "\x1b[A" << "\x1b[A";
+                                    std::cout << "\x1b[C" << "\x1b[C" << "\x1b[C";
                                     for (int i = 0; i != x; i++) {
                                         std::cout << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C" << "\x1b[C"; // ESC[#A	
                                     }
