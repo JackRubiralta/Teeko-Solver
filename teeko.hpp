@@ -109,6 +109,8 @@ struct Teeko {
             return moveCounter & 1;
         }
 
+        enum { ADVANCED = true, NORMAL = false };
+        const bool GAME_MODE = ADVANCED;
         bool isWin() const {
             bitboard position;
             if (currentPlayer() == 0) { position = red; } else { position = black; }
@@ -146,8 +148,7 @@ struct Teeko {
             }
 
             // 3x3 need wor
-            enum { ADVANCED = true, NORMAL = false };
-            const bool GAME_MODE = ADVANCED;
+            
             if (GAME_MODE) {
                 m = position & (position >> 2) & (position >> 10) & (position >> 12);
                 if ((m & 0b00111001110011100111001110011100111001110011100111) != 0) {
@@ -161,7 +162,7 @@ struct Teeko {
                 }
             
                 // 5x5 square corners - This is the whole board so we can just check the corners directly
-                if ((position & 0b0000100000000000000010001) == 0b0000100000000000000010001) {
+                if ((position & 17825809) == 17825809) {
                     return true;
                 }
             }
@@ -245,19 +246,28 @@ struct Teeko {
             return moves;      
         }
 
-        
+                
         std::vector<bitboard> possibleDrops() const {
-            const bitboard board_mask = 0b1111111111111111111111111;
+    const bitboard board_mask = 0b1111111111111111111111111; // Mask for all positions on the board
+    bitboard empty_positions = mask() ^ board_mask; // Calculate positions that are not occupied
 
-            bitboard empty_positions  = mask() ^ board_mask;
-            std::vector<bitboard> possible_drops;
-            while (empty_positions != 0) {
-                bitboard current_position = empty_positions ^ (empty_positions & (empty_positions - 1));
-                empty_positions ^= current_position;
-                possible_drops.push_back(current_position);
-            }
-            return possible_drops;
-        }
+    // If it's the first move, exclude the center position from possible drops
+    if (GAME_MODE) {
+    if (moveCounter == 0) {
+        empty_positions &= ~bitboard(4096); // Remove center position by clearing the bit at position 12
+    }
+    }
+
+    std::vector<bitboard> possible_drops;
+    while (empty_positions != 0) {
+        bitboard current_position = empty_positions & (-empty_positions); // Get the lowest bit set
+        possible_drops.push_back(current_position);
+        empty_positions &= (empty_positions - 1); // Clear the lowest bit set
+    }
+    return possible_drops;
+}
+
+
 
         uint64_t key() const {
             // https://stackoverflow.com/questions/31393100/how-to-get-position-of-right-most-set-bit-in-c

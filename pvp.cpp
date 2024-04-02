@@ -128,13 +128,8 @@ bitboard bestMove(Teeko node) {
 enum { PLAYER_VS_AI = false, PLAYER_VS_PLAYER = true };
 const bool OPPONENTS = PLAYER_VS_AI;
 
-
-int main() {
+void playAgainst() { 
     Teeko game = Teeko();
-    if (!OPPONENTS) {
-        load_book();
-    }
-   
     while (!(game.isWin())) {
             
 
@@ -150,8 +145,10 @@ int main() {
             system("CLS");
 
             game.print();
-            
-            int value = solve(game);
+            int value = 0;
+            if (OPPONENTS == PLAYER_VS_AI) {
+                int value = solve(game);
+            }
 
             if (value > 0) {
                 std::cout << "Winning in: " << int((WIN - value) / 2) << " moves" << std::endl;
@@ -198,7 +195,13 @@ int main() {
                         break;
                     case KEY_ENTER:
                         if (game.phase() == DROP_PHASE) {
-                            if (~game.mask() & ((bitboard)1 << (bitboard)(y * Teeko::LENGTH + x))) {
+                            bitboard combinedDrops = 0;
+                            std::vector<bitboard> possibleDrops = game.possibleDrops();
+                            // Loop through each possible drop and combine it using bitwise OR
+                            for (const bitboard& drop : possibleDrops) {
+                                combinedDrops |= drop;
+                            } 
+                            if (combinedDrops & ((bitboard)1 << (bitboard)(y * Teeko::LENGTH + x))) {
                                 markerColumn = x;
                                 markerRow = y;
                                 selecting = false; 
@@ -270,7 +273,33 @@ int main() {
     
     system("CLS");
     game.print();
+
     std::cout << "Player " << (game.currentPlayer() ^ 1) << " wins!" << std::endl;
-    while (true) {}
+    
+}
+
+int main() {
+    char playAgain = 'y'; // Initialize playAgain with 'y' to enter the loop at least once
+
+    if (OPPONENTS == PLAYER_VS_AI) {
+       load_book(); // Load your game book if playing against AI, assuming this is done once at the start
+    }
+
+    do {
+        playAgainst(); // Assuming playAgainst() contains the gameplay loop
+
+        // After a game is finished, ask if the player wants to play again
+        std::cout << "Play again? (y/n): ";
+        std::cin >> playAgain;
+        playAgain = tolower(playAgain); // Normalize input to lowercase to simplify the comparison
+
+        if(playAgain != 'y') {
+            break; // Exit the loop if the player doesn't want to play again
+        }
+
+        // Optionally clear the screen or reset game state if necessary
+        // For Windows use system("CLS"), for Unix/Linux use system("clear")
+    } while (true); // Continue this loop until broken explicitly
+
     return 0;
 }
